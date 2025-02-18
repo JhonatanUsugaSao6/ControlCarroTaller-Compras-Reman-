@@ -57,7 +57,55 @@ El sistema gestiona los registros mediante las siguientes tablas principales:
 ### Creación de la Base de Datos
 ```sql
 CREATE DATABASE controlcarrotaller;
+
 USE controlcarrotaller;
+
+CREATE TABLE registros(
+    id int PRIMARY KEY AUTO_INCREMENT,
+    cedula_operador varchar (25) not null, 
+    codigo_operador varchar (50) not null,
+    nombre_operador varchar (50) not null,
+    cedula_acompanante varchar (25) not null,
+    nombre_acompanante varchar (50) not null,
+    cargo_acompanante varchar (50) not null,
+    fecha date not null,
+    hora_salida time not null,
+    hora_entrada time,
+    motivo_salida varchar (30) not null,
+    autorizacion varchar (50) not null,
+    observaciones varchar (100), 
+    estado_registro int not null,
+    vigilante_asignado_id int,
+    ultimo_vigilante_id int,
+    FOREIGN KEY (ultimo_vigilante_id) REFERENCES  auth_user(id),
+    FOREIGN KEY (vigilante_asignado_id) REFERENCES auth_user(id));
+
+CREATE TABLE detallecarro(
+    id int PRIMARY KEY AUTO_INCREMENT,
+    puerta_faldon_delantero_conductor varchar(20) not null, 
+    puerta_trasera_conductor varchar(20) not null,
+    puerta_faldon_delantero_copiloto varchar(20) not null,
+    puerta_trasera_copiloto varchar(20) not null,
+    techo_capot varchar(20) not null,
+    boomper_delantero varchar(20) not null,
+    boomper_trasero_tapamaleta varchar(20) not null,
+    llanta_delantera_izquierda varchar(20) not null,
+    llanta_trasera_izquierda varchar(20) not null,
+    llanta_delantera_derecha varchar(20) not null,
+    llanta_trasera_derecha varchar(20) not null,
+    faldon_trasero_izquierdo varchar(20), 
+    faldon_trasero_derecho varchar(20) not null,
+    registro_carro_id int,
+    FOREIGN KEY (registro_carro_id) REFERENCES registros(id));
+
+CREATE TABLE fotosdetalle(
+    id int PRIMARY KEY AUTO_INCREMENT,
+    parte varchar (100) not null,
+    imagen varchar (200) not null,
+    detalle_carro_id int,
+    FOREIGN KEY (detalle_carro_id) REFERENCES detallecarro(id));
+
+
 ```
 
 ## Respaldo de la Información
