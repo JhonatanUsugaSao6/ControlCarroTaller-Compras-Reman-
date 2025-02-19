@@ -114,7 +114,7 @@ Se recomienda realizar backups cada 15 días (o semanalmente si hay un alto volu
 ## Instalación y Configuración
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/usuario/control-carro-taller.git
+   git clone https://github.com/JhonatanUsugaSao6/ControlCarroTaller-Compras-Reman-.git
    ```
 2. Instala las dependencias:
    ```bash
