@@ -25,7 +25,6 @@ El sistema está desarrollado con el framework **Django** siguiendo el patrón *
 El proyecto se organiza en carpetas siguiendo la estructura de Django:
 ```
 CarroTaller/
-│── __pycache__/
 │── Public/
 │── Templates/
     │── home/
@@ -42,10 +41,12 @@ CarroTaller/
 │── urls.py
 │── views.py
 │── wsgi.py
-│── env/
 │── media/
 │── staticfiles/
+│── gitignore
+│── README.md
 │── manage.py
+│── requirements.txt
 ```
 
 ## Base de Datos
