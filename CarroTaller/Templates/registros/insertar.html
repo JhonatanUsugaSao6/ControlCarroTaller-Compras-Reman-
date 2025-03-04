@@ -214,12 +214,12 @@
                             <option value="Diego Ramirez" {% if request.POST.autorizacion == "Diego Ramirez" %}selected{% endif %}>
                                 Diego Ramirez
                             </option>
-                            <option value="Melisa Rojas" {% if request.POST.autorizacion == "Melisa Rojas" %}selected{% endif %}>
+                            <!-- <option value="Melisa Rojas" {% if request.POST.autorizacion == "Melisa Rojas" %}selected{% endif %}>
                                 Melisa Rojas
                             </option>
                             <option value="Natalia Ospina" {% if request.POST.autorizacion == "Natalia Ospina" %}selected{% endif %}>
                                 Natalia Ospina
-                            </option>
+                            </option> -->
                             <option value="Zamir Caro" {% if request.POST.autorizacion == "Zamir Caro" %}selected{% endif %}>
                                 Zamir Caro
                             </option>
@@ -358,7 +358,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCSRFToken()
                 },
-                credentials: 'same-origin' // Importante si estás usando Django y sesiones
+                credentials: 'same-origin' 
             })
             .then(response => {
                 if (!response.ok) {
@@ -386,7 +386,6 @@
                 }
             })
             .catch(error => {
-                // No mostramos mensajes de error en consola
                 if (error.message === 'No se encontró la persona con esa cédula.') {
                     document.getElementById('errorCedula').textContent = error.message; // Muestra el mensaje específico
                 } else {

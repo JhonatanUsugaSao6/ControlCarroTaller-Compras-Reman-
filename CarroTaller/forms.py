@@ -209,19 +209,19 @@ class DetalleCarroForm(forms.ModelForm):
             'faldon_trasero_derecho'
         ]
         widgets = {
-            'puerta_faldon_delantero_conductor': forms.Select(choices=DetalleCarro.ESTADOS),
-            'puerta_trasera_conductor': forms.Select(choices=DetalleCarro.ESTADOS),
-            'puerta_faldon_delantero_copiloto': forms.Select(choices=DetalleCarro.ESTADOS),
-            'puerta_trasera_copiloto': forms.Select(choices=DetalleCarro.ESTADOS),
-            'techo_capot': forms.Select(choices=DetalleCarro.ESTADOS),
-            'boomper_delantero': forms.Select(choices=DetalleCarro.ESTADOS),
-            'boomper_trasero_tapamaleta': forms.Select(choices=DetalleCarro.ESTADOS),
-            'llanta_delantera_izquierda': forms.Select(choices=DetalleCarro.ESTADOS),
-            'llanta_trasera_izquierda': forms.Select(choices=DetalleCarro.ESTADOS),
-            'llanta_delantera_derecha': forms.Select(choices=DetalleCarro.ESTADOS),
-            'llanta_trasera_derecha': forms.Select(choices=DetalleCarro.ESTADOS),
-            'faldon_trasero_izquierdo': forms.Select(choices=DetalleCarro.ESTADOS),
-            'faldon_trasero_derecho': forms.Select(choices=DetalleCarro.ESTADOS),
+            'puerta_faldon_delantero_conductor': forms.Select(),
+            'puerta_trasera_conductor': forms.Select(),
+            'puerta_faldon_delantero_copiloto': forms.Select(),
+            'puerta_trasera_copiloto': forms.Select(),
+            'techo_capot': forms.Select(),
+            'boomper_delantero': forms.Select(),
+            'boomper_trasero_tapamaleta': forms.Select(),
+            'llanta_delantera_izquierda': forms.Select(),
+            'llanta_trasera_izquierda': forms.Select(),
+            'llanta_delantera_derecha': forms.Select(),
+            'llanta_trasera_derecha': forms.Select(),
+            'faldon_trasero_izquierdo': forms.Select(),
+            'faldon_trasero_derecho': forms.Select(),
         }
         
 class FotoCarroForm(forms.ModelForm):

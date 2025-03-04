@@ -74,7 +74,7 @@ def listadoRegistrosInactivos(request):
 @verificar_registro_pendiente
 def home(request):
 
-    # Busca el registro pendiente (primero que cumpla la condición)
+    # Busca el registro pendiente
     registro_pendiente = Registro.objects.filter(hora_entrada__isnull=True).first()
 
     context = {
@@ -245,8 +245,8 @@ def crearVigilante(request):
             messages.error(request, 'Todos los campos son obligatorios.')
             return redirect('crear')
 
-        # Validar formato de la cédula (puedes ajustar esta expresión regular según tu formato de cédula)
-        if not re.match(r'^\d+$', cedula):  # Solo números
+        # Validar formato de la cédula 
+        if not re.match(r'^\d+$', cedula): 
             messages.error(request, 'La cédula debe contener solo números.')
             return redirect('crear')
 
@@ -296,29 +296,40 @@ def listadoVigilantes(request):
 def guardarDetalles(request, registro_id):
     # Obtener el registro asociado desde la URL
     registro = get_object_or_404(Registro, id=registro_id)
-    detalle_carro =DetalleCarro.objects.filter(registro_carro__lt=registro_id).order_by('-registro_carro').first()
-    if request.method == 'GET':
-        # Crear un diccionario con el estado de cada parte
-        estados_partes = {
-            'puerta_faldon_delantero_conductor': detalle_carro.puerta_faldon_delantero_conductor,
-            'puerta_trasera_conductor': detalle_carro.puerta_trasera_conductor,
-            'puerta_faldon_delantero_copiloto': detalle_carro.puerta_faldon_delantero_copiloto,
-            'puerta_trasera_copiloto': detalle_carro.puerta_trasera_copiloto,
-            'techo_capot': detalle_carro.techo_capot,
-            'boomper_delantero': detalle_carro.boomper_delantero,
-            'boomper_trasero_tapamaleta': detalle_carro.boomper_trasero_tapamaleta,
-            'llanta_delantera_izquierda': detalle_carro.llanta_delantera_izquierda,
-            'llanta_trasera_izquierda': detalle_carro.llanta_trasera_izquierda,
-            'llanta_delantera_derecha': detalle_carro.llanta_delantera_derecha,
-            'llanta_trasera_derecha': detalle_carro.llanta_trasera_derecha,
-            'faldon_trasero_izquierdo': detalle_carro.faldon_trasero_izquierdo,
-            'faldon_trasero_derecho': detalle_carro.faldon_trasero_derecho,
-        }
+    
+    # Obtener el detalle del último registro anterior si existe
+    detalle_carro = DetalleCarro.objects.filter(registro_carro__lt=registro_id).order_by('-registro_carro').first()
 
-        # Renderizar el formulario de detalles con los estados actuales
+    if request.method == 'GET':
+        # Verificar si hay un registro previo
+        if detalle_carro:
+            estados_partes = {
+                'puerta_faldon_delantero_conductor': detalle_carro.puerta_faldon_delantero_conductor,
+                'puerta_trasera_conductor': detalle_carro.puerta_trasera_conductor,
+                'puerta_faldon_delantero_copiloto': detalle_carro.puerta_faldon_delantero_copiloto,
+                'puerta_trasera_copiloto': detalle_carro.puerta_trasera_copiloto,
+                'techo_capot': detalle_carro.techo_capot,
+                'boomper_delantero': detalle_carro.boomper_delantero,
+                'boomper_trasero_tapamaleta': detalle_carro.boomper_trasero_tapamaleta,
+                'llanta_delantera_izquierda': detalle_carro.llanta_delantera_izquierda,
+                'llanta_trasera_izquierda': detalle_carro.llanta_trasera_izquierda,
+                'llanta_delantera_derecha': detalle_carro.llanta_delantera_derecha,
+                'llanta_trasera_derecha': detalle_carro.llanta_trasera_derecha,
+                'faldon_trasero_izquierdo': detalle_carro.faldon_trasero_izquierdo,
+                'faldon_trasero_derecho': detalle_carro.faldon_trasero_derecho,
+            }
+        else:
+            # Si no hay registro previo, inicializar con 'Ninguna'
+            estados_partes = {campo: 'Ninguna' for campo in [
+                'puerta_faldon_delantero_conductor', 'puerta_trasera_conductor', 'puerta_faldon_delantero_copiloto',
+                'puerta_trasera_copiloto', 'techo_capot', 'boomper_delantero', 'boomper_trasero_tapamaleta',
+                'llanta_delantera_izquierda', 'llanta_trasera_izquierda', 'llanta_delantera_derecha',
+                'llanta_trasera_derecha', 'faldon_trasero_izquierdo', 'faldon_trasero_derecho'
+            ]}
+
         return render(request, 'registros/detallesRegistro.html', {
             'registro': registro,
-            'estados_partes': estados_partes,  # Pasamos los estados actuales
+            'estados_partes': estados_partes,
         })
 
     elif request.method == 'POST':
@@ -331,7 +342,6 @@ def guardarDetalles(request, registro_id):
 
             detalles = data.get('detalles', [])
 
-            # Validar los datos enviados
             if not detalles:
                 return JsonResponse({'error': 'Faltan los detalles del registro'}, status=400)
 
@@ -352,7 +362,6 @@ def guardarDetalles(request, registro_id):
                 'Faldon trasero derecho': 'faldon_trasero_derecho',
             }
 
-            # Validar todas las partes y estados antes de modificar la base de datos
             for detalle in detalles:
                 parte = detalle.get('parte')
                 estado = detalle.get('estado')
@@ -380,7 +389,6 @@ def guardarDetalles(request, registro_id):
             # Obtener las partes dañadas
             partes_danadas = detalle_carro.obtener_partes_danadas()
 
-            # Redirigir al formulario de fotos, pasando las partes dañadas
             return JsonResponse({
                 'message': 'Detalles guardados con éxito',
                 'partes_danadas': partes_danadas,
@@ -398,30 +406,115 @@ def guardarDetalles(request, registro_id):
 
 
 
+# def subirFotos(request, detalle_carro_id):
+#     detalle_carro = get_object_or_404(DetalleCarro, id=detalle_carro_id)
+
+#     # Obtener las partes dañadas del detalle
+#     partes_danadas = detalle_carro.obtener_partes_danadas()
+    
+#     ultimo_detalle_carro = FotoDetalle.objects.latest('id').detalle_carro
+#     fotos = FotoDetalle.objects.filter(detalle_carro=ultimo_detalle_carro)
+    
+
+#     if request.method == 'GET':
+#         # Renderizar el formulario con las partes dañadas
+#         if fotos:
+        
+#             return render(request, 'registros/fotosDetalle.html', {
+#                 'detalle_carro': detalle_carro,
+#                 'partes_danadas': partes_danadas,
+#                 'error_general': '',  
+#                 'fotos': fotos
+#             })
+#         else: 
+#             return render(request, 'registros/fotosDetalle.html', {
+#                 'detalle_carro': '',
+#                 'partes_danadas': '',
+#                 'error_general': '',  
+#                 'fotos': ''
+#             })
+
+#     elif request.method == 'POST':
+        
+#         errores = []
+
+#         # Tipos MIME permitidos
+#         mime_permitidos = ['image/jpeg', 'image/png', 'image/jpg']
+
+#         for parte in partes_danadas:
+#             imagenes = request.FILES.getlist(f'imagenes_{parte}')
+
+#             if not imagenes:
+#                 errores.append(f"Es obligatorio subir al menos una foto para la parte dañada: {parte}.")
+#             else:
+#                 for imagen in imagenes:
+#                     # Validar el tipo de archivo
+#                     if imagen.content_type not in mime_permitidos:
+#                         errores.append(f"El archivo subido para {parte} no es una imagen válida (JPEG o PNG).")
+
+#         # Guardar las imágenes si no hay errores    
+#         for parte in partes_danadas:
+#             imagenes = request.FILES.getlist(f'imagenes_{parte}')
+            
+#             # Si se suben nuevas fotos
+#             if imagenes:
+#                 for imagen in imagenes:
+#                     foto = FotoDetalle(detalle_carro=detalle_carro, parte=parte, imagen=imagen)
+#                     foto.save()
+            
+#             # Si no se suben nuevas fotos, se mantienen las anteriores
+#             else:
+#                 foto_anterior_id = request.POST.get(f'fotoanterior_{parte}')
+#                 if foto_anterior_id:
+#                     try:
+#                         foto_existente = FotoDetalle.objects.get(id=foto_anterior_id)
+#                         # Aquí solo asociamos la imagen existente con el nuevo FotoDetalle
+#                         foto = FotoDetalle(detalle_carro=detalle_carro, parte=parte, imagen=foto_existente.imagen)
+#                         foto.save()
+#                     except FotoDetalle.DoesNotExist:
+#                         print(f"No se encontró la foto anterior para la parte {parte}.")
+
+#         registro = detalle_carro.registro_carro 
+#         return redirect('/', registro_id=registro.id)
+
+#     return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+
+
+
+
 def subirFotos(request, detalle_carro_id):
     detalle_carro = get_object_or_404(DetalleCarro, id=detalle_carro_id)
 
-    # Obtener las partes dañadas de este detalle
+    # Obtener las partes dañadas del detalle actual
     partes_danadas = detalle_carro.obtener_partes_danadas()
-    
-    ultimo_detalle_carro = FotoDetalle.objects.latest('id').detalle_carro
-    fotos = FotoDetalle.objects.filter(detalle_carro=ultimo_detalle_carro)
-    
+
+    # 🔹 Intentar obtener fotos del detalle actual
+    fotos = FotoDetalle.objects.filter(detalle_carro=detalle_carro)
+
+    # 🔹 Si NO hay fotos en el detalle actual, buscar en el detalle anterior
+    if not fotos.exists():
+        registro_anterior = Registro.objects.filter(id__lt=detalle_carro.registro_carro.id).order_by('-id').first()
+        
+        if registro_anterior:
+            detalle_anterior = DetalleCarro.objects.filter(registro_carro=registro_anterior).first()
+            
+            if detalle_anterior:
+                fotos = FotoDetalle.objects.filter(detalle_carro=detalle_anterior)
+
+    # Si después de buscar no hay fotos, se asigna None para evitar errores
+    fotos = fotos if fotos.exists() else None
 
     if request.method == 'GET':
-        # Renderizar el formulario con las partes dañadas
         return render(request, 'registros/fotosDetalle.html', {
             'detalle_carro': detalle_carro,
             'partes_danadas': partes_danadas,
             'error_general': '',  
-            'fotos': fotos
+            'fotos': fotos  # Puede ser una queryset de fotos o None si no hay
         })
 
     elif request.method == 'POST':
-        
         errores = []
-
-        # Tipos MIME permitidos
         mime_permitidos = ['image/jpeg', 'image/png', 'image/jpg']
 
         for parte in partes_danadas:
@@ -431,27 +524,23 @@ def subirFotos(request, detalle_carro_id):
                 errores.append(f"Es obligatorio subir al menos una foto para la parte dañada: {parte}.")
             else:
                 for imagen in imagenes:
-                    # Validar el tipo de archivo
                     if imagen.content_type not in mime_permitidos:
                         errores.append(f"El archivo subido para {parte} no es una imagen válida (JPEG o PNG).")
 
-        # Guardar las imágenes si no hay errores    
+        # Guardar imágenes si no hay errores
         for parte in partes_danadas:
             imagenes = request.FILES.getlist(f'imagenes_{parte}')
             
-            # Si se suben nuevas fotos
             if imagenes:
                 for imagen in imagenes:
                     foto = FotoDetalle(detalle_carro=detalle_carro, parte=parte, imagen=imagen)
                     foto.save()
             
-            # Si no se suben nuevas fotos, se mantienen las anteriores
             else:
                 foto_anterior_id = request.POST.get(f'fotoanterior_{parte}')
                 if foto_anterior_id:
                     try:
                         foto_existente = FotoDetalle.objects.get(id=foto_anterior_id)
-                        # Aquí solo asociamos la imagen existente con el nuevo FotoDetalle
                         foto = FotoDetalle(detalle_carro=detalle_carro, parte=parte, imagen=foto_existente.imagen)
                         foto.save()
                     except FotoDetalle.DoesNotExist:
@@ -502,7 +591,7 @@ def listadoDetallesYFotos(request, registro_id):
     # Obtener el registro específico
     registro = get_object_or_404(Registro, id=registro_id)
 
-    # Obtener el detalle del carro asociado a este registro
+    # Obtener el detalle del carro asociado al registro
     try:
         detalle_carro = DetalleCarro.objects.get(registro_carro=registro)
     except DetalleCarro.DoesNotExist:

@@ -1,4 +1,4 @@
-# Ignorar entorno virtual (si lo tienes)
+# Ignorar entorno virtual 
 venv/
 env/
 
@@ -13,7 +13,7 @@ __pycache__/
 *.log
 *.bak
 
-# Ignorar archivos de entorno (contienen datos sensibles como contraseñas)
+# Ignorar archivos de entorno 
 *.env
 
 # Ignorar archivos de prueba o temporales
