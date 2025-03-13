@@ -76,6 +76,8 @@
         <p id="fecha"></p>
         <p id="horaSalida"></p>
         <p id="horaEntrada"></p>
+        <p id="kilometrajeSalida"></p>
+        <p id="kilometrajeEntrada"></p>
         <p id="motivoSalida"></p>
         <p id="autorizacion"></p>
         <p id="observaciones"></p>
@@ -118,6 +120,10 @@
             document.getElementById('fecha').textContent = `Fecha: ${data.fecha}`;
             document.getElementById('horaSalida').textContent = `Hora de Salida: ${data.hora_salida}`;
             document.getElementById('horaEntrada').textContent = `Hora de Entrada: ${data.hora_entrada}`;
+            
+            document.getElementById('kilometrajeSalida').textContent = `Kilometraje de Salida: ${data.kilometraje_salida}`;
+            document.getElementById('kilometrajeEntrada').textContent = `Kilometraje de Entrada: ${data.kilometraje_entrada}`;
+
             document.getElementById('motivoSalida').textContent = `Motivo de Salida: ${data.motivo_salida}`;
             document.getElementById('autorizacion').textContent = `Autorización: ${data.autorizacion}`;
             document.getElementById('observaciones').textContent = `Observaciones: ${data.observaciones}`;

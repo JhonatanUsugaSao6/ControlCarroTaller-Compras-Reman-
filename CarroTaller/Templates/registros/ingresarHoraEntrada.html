@@ -31,6 +31,24 @@
                         {% endif %}
                     </div>
                 </div>
+
+                <div class="col-sm-12 margen">
+                    <div class="form-floating">
+                        <input type="number" name="kilometraje_entrada"
+                            class="form-control borde-input {% if form.errors.kilometraje_entrada %}is-invalid{% endif %}"
+                            id="floatingInputKilometrajeEntrada" placeholder="Kilometraje de entrada"
+                            value="{{ request.POST.kilometraje_entrada|default:'' }}">
+                        <label for="floatingInputKilometrajeEntrada">Kilometraje de Entrada</label>
+                        {% if form.kilometraje_entrada.errors %}
+                        <div class="text-danger">
+                            {% for error in form.kilometraje_entrada.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
             </div>
             <button type="submit" class="btn btn-light boton-guardar mt-2">Guardar Hora</button>
         </form>

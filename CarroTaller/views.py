@@ -26,7 +26,22 @@ def insertarRegistros(request):
         observaciones = request.POST.get("observaciones")
         if not observaciones:
             request.POST["observaciones"] = "Ninguna"
+            
+        codigo_operador = request.POST.get("codigo_operador")
+        if not codigo_operador:
+            request.POST["codigo_operador"] = "Ninguna"
+            
+        cedula_acompanante = request.POST.get("cedula_acompanante")
+        if not cedula_acompanante:
+            request.POST["cedula_acompanante"] = "Ninguna"
+            
+        nombre_acompanante = request.POST.get("nombre_acompanante")
+        if not nombre_acompanante:
+            request.POST["nombre_acompanante"] = "Ninguna"
 
+        cargo_acompanante = request.POST.get("cargo_acompanante")
+        if not cargo_acompanante:
+            request.POST["cargo_acompanante"] = "Ninguna"
         
         # Si se selecciona "Otro", reemplazar motivo_salida con el valor de motivo_salida_otro
         if motivo_salida == "Otro" and motivo_salida_otro:
@@ -150,6 +165,8 @@ def informacionRegistro(request, id):
             'fecha': formato_fecha,
             'hora_salida': formato_hora_s,
             'hora_entrada': formato_hora_e,
+            'kilometraje_salida': registro.kilometraje_salida,
+            'kilometraje_entrada': registro.kilometraje_entrada,
             'motivo_salida': registro.motivo_salida,
             'autorizacion': registro.autorizacion,
             'observaciones': registro.observaciones,
@@ -483,22 +500,35 @@ def ingresarHoraEntrada(request, registro_id):
     registro = get_object_or_404(Registro, id=registro_id)
 
     if request.method == 'POST':
+        
+        kilometraje_entrada = request.POST.get('kilometraje_entrada')
         hora_entrada = request.POST.get('hora_entrada')
 
         if not hora_entrada:
             messages.error(request, "La hora de entrada es obligatoria.")
+        
+        if not kilometraje_entrada:
+            messages.error(request, "El kilometraje de entrada es obligatorio.")
+
         else:
             try:
                 from datetime import datetime
                 hora_entrada_obj = datetime.strptime(hora_entrada, "%H:%M").time()
-
+                
                 if registro.hora_salida and hora_entrada_obj <= registro.hora_salida:
                     messages.error(request, "La hora de entrada debe ser posterior a la hora de salida.")
-                else:
+
+                kilometraje_entrada = int(kilometraje_entrada)  # Convertimos a entero
+                if int(registro.kilometraje_salida) is not None and kilometraje_entrada <= int(registro.kilometraje_salida):
+                    messages.error(request, "El kilometraje de entrada debe ser mayor al kilometraje de salida.")
+                
+                if not messages.get_messages(request):  # Si no hay errores, guardamos
                     registro.hora_entrada = hora_entrada_obj
+                    registro.kilometraje_entrada = kilometraje_entrada
                     registro.ultimo_vigilante = request.user
                     registro.save()
                     return redirect('detalle_registro', registro_id=registro.id) 
+
             except ValueError:
                 messages.error(request, "Formato de hora inválido. Usa HH:MM.")
 

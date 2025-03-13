@@ -72,6 +72,8 @@ CREATE TABLE registros(
     fecha date not null,
     hora_salida time not null,
     hora_entrada time,
+    kilometraje_salida varchar (50) not null,
+    kilometraje_entrada varchar (50) not null,
     motivo_salida varchar (30) not null,
     autorizacion varchar (50) not null,
     observaciones varchar (100), 
@@ -119,18 +121,45 @@ Se recomienda realizar backups cada 15 días (o semanalmente si hay un alto volu
    ```
 2. Instala las dependencias:
    ```bash
+   SECRET_KEY = tu-clave-seguridad
+
+    DEBUG = True o False
+
+    ALLOWED_HOSTS = localhost, 127.0.0.1
+
+    # Base de datos SQL Server (Siesa)
+    ENGINE_SQL=tu-engine-siesa
+    NAME_SQL=tu-tabla
+    USER_SQL=tu-usuario
+    PASSWORD_SQL=tu-contraseña
+    HOST_SQL=tu-host
+    PORT_SQL=tu-puerto
+    DRIVER=tu-drive-odbc
+
+    # Base de datos MySQL (Default)
+    ENGINE_MYSQL=tu-engine
+    NAME_MYSQL=tu-tabla
+    USER_MYSQL=tu-usuario
+    PASSWORD_MYSQL=tu-contraseña
+    HOST_MYSQL=tu-host
+    PORT_MYSQL=tu-puerto
+    INIT=SET sql_mode='STRICT_TRANS_TABLES'
+   ```
+
+3. Crear archivo .env:
+   ```bash
    pip install -r requirements.txt
    ```
-3. Realiza las migraciones de la base de datos:
+
+4. Realiza las migraciones de la base de datos:
    ```bash
    python manage.py migrate
    ```
-4. Inicia el servidor:
+5. Inicia el servidor:
    ```bash
    python manage.py runserver
    ```
 
 ## Posibles Problemas
-1. Se debe insertar manualmente el primer registro en la base de datos antes de usar el sistema.
-2. No se pueden ver registros sin una hora de entrada asignada.
+1. No se pueden ver registros sin una hora de entrada asignada.
 

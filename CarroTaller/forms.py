@@ -11,7 +11,7 @@ class RegistroForm(forms.ModelForm):
     )
     
     codigo_operador = forms.CharField(
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         error_messages={'required': 'El código del operador es obligatorio.'}
     )
@@ -61,6 +61,18 @@ class RegistroForm(forms.ModelForm):
         error_messages={'required': 'La hora de entrada es obligatoria.'}
     )
     
+    kilometraje_salida = forms.CharField(
+        required=True,  # Hacemos que el campo no sea obligatorio
+        widget=forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+        error_messages={'required': 'El kilometraje de salida es obligatoria.'}
+    )
+    
+    kilometraje_entrada = forms.CharField(
+        required=False,  # Hacemos que el campo no sea obligatorio
+        widget=forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+        error_messages={'required': 'La hora de entrada es obligatoria.'}
+    )
+    
     motivo_salida = forms.CharField(
         required=True,
         widget=forms.Select(attrs={'class': 'form-control'}),
@@ -90,7 +102,7 @@ class RegistroForm(forms.ModelForm):
     class Meta:
         model = Registro
         fields = ['cedula_operador', 'codigo_operador', 'nombre_operador', 'cedula_acompanante', 'nombre_acompanante', 'cargo_acompanante', 'fecha', 
-                  'hora_salida', 'hora_entrada', 'motivo_salida', 'autorizacion', 'observaciones']
+                  'hora_salida', 'hora_entrada', 'kilometraje_salida', 'kilometraje_entrada', 'motivo_salida', 'autorizacion', 'observaciones']
         widgets = {
             'fecha': forms.DateInput(attrs={'type': 'date', 'format': '%Y-%m-%d'}),
             'hora_salida': forms.TimeInput(attrs={'type': 'time', 'format': '%H:%M'}),
@@ -109,12 +121,6 @@ class RegistroForm(forms.ModelForm):
         if len(cedula_operador) < 5 or len(cedula_operador) > 10:
             raise forms.ValidationError("El número de dígitos no son coherentes.")
         return cedula_operador
-    
-    def clean_codigo_operador(self):
-        codigo_operador = self.cleaned_data.get("codigo_operador")
-        if not codigo_operador:
-            raise forms.ValidationError("Este campo es obligatorio.")
-        return codigo_operador  
     
     def clean_nombre_operador(self):
         nombre_operador = self.cleaned_data.get("nombre_operador")
@@ -154,28 +160,26 @@ class RegistroForm(forms.ModelForm):
             motivo_otro = self.cleaned_data.get('motivo_otro')
             return motivo_otro
         return motivo_salida
-    
-    def clean_cedula_acompanante(self):
-        cedula_acompanante = self.cleaned_data.get("cedula_acompanante")
-        if not cedula_acompanante:
+     
+    def clean_kilometraje_salida(self):
+        kilometraje_salida = self.cleaned_data.get("kilometraje_salida")
+        if not kilometraje_salida:
             raise forms.ValidationError("Este campo es obligatorio.")
-        return cedula_acompanante  
+        
+        kilometraje_salida_int = int(kilometraje_salida)
+        
+        if kilometraje_salida_int < 0:
+            raise forms.ValidationError("El número de dígitos no son coherentes.")
+
+        
+        ultimo_registro = Registro.objects.exclude(id=self.instance.id).order_by('-id').first()
+        if ultimo_registro and kilometraje_salida_int < int(ultimo_registro.kilometraje_entrada):
+            raise forms.ValidationError(
+                f"El kilometraje ingresado es menor al que tiene el carro actualmente."
+            )
+
+        return kilometraje_salida
     
-    def clean_nombre_acompanante(self):
-        nombre_acompanante = self.cleaned_data.get("nombre_acompanante")
-        if not nombre_acompanante:
-            raise forms.ValidationError("Este campo es obligatorio.")
-        if len(nombre_acompanante) < 3 or len(nombre_acompanante) > 50:
-            raise forms.ValidationError("El nombre no cumple con el límite de caracteres.")
-        return nombre_acompanante   
-    
-    def clean_cargo_acompanante(self):
-        cargo_acompanante = self.cleaned_data.get("cargo_acompanante")
-        if not cargo_acompanante:
-            raise forms.ValidationError("Este campo es obligatorio.")
-        if len(cargo_acompanante) < 3 or len(cargo_acompanante) > 50:
-            raise forms.ValidationError("El cargo no cumple con el límite de caracteres.")
-        return cargo_acompanante  
     
 class LoginForm(forms.Form):
     username = forms.CharField(
