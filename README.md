@@ -161,5 +161,5 @@ Se recomienda realizar backups cada 15 días (o semanalmente si hay un alto volu
    ```
 
 ## Posibles Problemas
-1. No se puede ver la información de un registro si no tiene la hora de entrada ingresa, se debe completar el registro primero. 
+1. No se puede ver la información de un registro desde el icono del listado de registros (el ojo) si no tiene la hora de entrada ingresada, se debe completar primero el registro. 
 
