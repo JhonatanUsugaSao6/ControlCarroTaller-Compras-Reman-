@@ -4,21 +4,21 @@
     <h1 class="titulo-insertar mt-5">Agregar nuevo registro</h1>
     <div class="formulario">
         <div id="errorCedula" class="text-danger"></div>
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row">
 
                 <div class="col-sm-12 col-lg-4 margen">
                     <div class="form-floating">
-                        <input type="number" name="cedula_operador"
-                            class="form-control borde-input {% if form.errors.cedula_operador %}is-invalid{% endif %}"
-                            id="floatingInputCedulaOperador" placeholder="Cédula del operador"
-                            value="{{ request.POST.cedula_operador|default:'' }}">
-                        <label for="floatingInputCedulaOperador">Cédula del operador</label>
+                        <input type="number" name="cedula_conductor"
+                            class="form-control borde-input {% if form.errors.cedula_conductor %}is-invalid{% endif %}"
+                            id="floatingInputCedulaConductor" placeholder="Cédula del conductor"
+                            value="{{ request.POST.cedula_conductor|default:'' }}">
+                        <label for="floatingInputCedulaConductor">Cédula del Conductor</label>
                 
-                        {% if form.cedula_operador.errors %}
+                        {% if form.cedula_conductor.errors %}
                         <div class="text-danger">   
-                            {% for error in form.cedula_operador.errors %}
+                            {% for error in form.cedula_conductor.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
@@ -29,38 +29,38 @@
 
                 <div class="col-sm-12 col-lg-4 margen">
                     <div class="form-floating">
-                        <input type="text" name="nombre_operador"
-                            class="form-control borde-input {% if form.errors.nombre_operador %}is-invalid{% endif %}"
-                            id="floatingInputNombreOperador" placeholder="Nombre del operador"
-                            value="{{ request.POST.nombre_operador|default:'' }}" readonly>
-                        <label for="floatingInputNombreOperador">Nombre del operador</label>
-                        {% if form.nombre_operador.errors %}
+                        <input type="text" name="nombre_conductor"
+                            class="form-control borde-input {% if form.errors.nombre_conductor %}is-invalid{% endif %}"
+                            id="floatingInputNombreConductor" placeholder="Nombre del conductor"
+                            value="{{ request.POST.nombre_conductor|default:'' }}" readonly>
+                        <label for="floatingInputNombreConductor">Nombre del Conductor</label>
+                        {% if form.nombre_conductor.errors %}
                         <div class="text-danger">
-                            {% for error in form.nombre_operador.errors %}
+                            {% for error in form.nombre_conductor.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                         {% endif %}
                     </div>
                 </div>
-
 
                 <div class="col-sm-12 col-lg-4 margen">
                     <div class="form-floating">
-                        <input type="number" name="codigo_operador"
-                            class="form-control borde-input {% if form.errors.codigo_operador %}is-invalid{% endif %}"
-                            id="floatingInputCodigoOperador" placeholder="Código del operador"
-                            value="{{ request.POST.codigo_operador|default:'' }}">
-                        <label for="floatingInputCodigoOperador">Código del operador</label>
-                        {% if form.codigo_operador.errors %}
+                        <input type="text" name="cargo_conductor"
+                            class="form-control borde-input {% if form.errors.cargo_conductor %}is-invalid{% endif %}"
+                            id="floatingInputCargoConductor" placeholder="Cargo del conductor"
+                            value="{{ request.POST.cargo_conductor|default:'' }}" readonly>
+                        <label for="floatingInputCargoConductor">Cargo del Conductor</label>
+                        {% if form.cargo_conductor.errors %}
                         <div class="text-danger">
-                            {% for error in form.codigo_operador.errors %}
+                            {% for error in form.cargo_conductor.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                         {% endif %}
                     </div>
                 </div>
+
 
                 <div class="col-sm-12 col-lg-4 margen">
                     <div class="form-floating">
@@ -248,12 +248,6 @@
                             <option value="Diego Ramirez" {% if request.POST.autorizacion == "Diego Ramirez" %}selected{% endif %}>
                                 Diego Ramirez
                             </option>
-                            <!-- <option value="Melisa Rojas" {% if request.POST.autorizacion == "Melisa Rojas" %}selected{% endif %}>
-                                Melisa Rojas
-                            </option>
-                            <option value="Natalia Ospina" {% if request.POST.autorizacion == "Natalia Ospina" %}selected{% endif %}>
-                                Natalia Ospina
-                            </option> -->
                             <option value="Zamir Caro" {% if request.POST.autorizacion == "Zamir Caro" %}selected{% endif %}>
                                 Zamir Caro
                             </option>
@@ -283,6 +277,13 @@
                             {% endfor %}
                         </div>
                         {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-lg-12 margen">
+                    <div class="form-floating">
+                        <input id="url_imagen" type="file" name="url_imagen" class="form-control borde-input" accept="image/jpeg, image/png" multiple>
+                        <label for="ulr_imagen">Foto</label>
                     </div>
                 </div>
             </div>
@@ -338,11 +339,11 @@
         return null;
     }
     
-    document.getElementById('floatingInputCedulaOperador').addEventListener('blur', function () {
+    document.getElementById('floatingInputCedulaConductor').addEventListener('blur', function () {
         const cedula = this.value.trim(); // Obtener el valor del input y limpiarlo
         
         if (cedula) {
-            fetch('/registros/buscarOperador?cedula_operador=' + cedula, {
+            fetch('/registros/buscarConductor?cedula_conductor=' + cedula, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -363,10 +364,17 @@
             })
             .then(data => {
                 if (data.nombre) {
-                    document.getElementById('floatingInputNombreOperador').value = toTitleCase(data.nombre); // Actualiza el campo del nombre
+                    document.getElementById('floatingInputNombreConductor').value = toTitleCase(data.nombre); // Actualiza el campo del nombre
                     document.getElementById('errorCedula').textContent = ''; // Limpia el mensaje de error
-                } else if (data.error) {
-                    document.getElementById('floatingInputNombreOperador').value = ''; // Limpia el campo del nombre
+                }        
+                    if (data.cargo) {
+                        document.getElementById('floatingInputCargoConductor').value = toTitleCase(data.cargo); // Actualiza el campo del cargo con formato
+                        document.getElementById('errorCedula').textContent = ''; // Limpia el mensaje de error
+                    }
+                
+                else if (data.error) {
+                    document.getElementById('floatingInputNombreConductor').value = ''; // Limpia el campo del nombre
+                    document.getElementById('floatingInputCargoConductor').value = '';
                     document.getElementById('errorCedula').textContent = data.error; // Muestra el mensaje de error desde la respuesta
                 }
             })

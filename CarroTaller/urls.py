@@ -37,7 +37,7 @@ urlpatterns = [
     path('registros/fotosDetalle/<int:detalle_carro_id>/', views.subirFotos, name='subir_fotos'),
     path('registros/ingresarHoraEntrada/<int:registro_id>/', views.ingresarHoraEntrada, name='ingresar_hora_entrada'),
     path('registros/listadoDetallesFotos/<int:registro_id>/', views.listadoDetallesYFotos, name='detalles_fotos'),
-    path('registros/buscarOperador', views.buscarOperador, name='buscar_operador'),
+    path('registros/buscarConductor', views.buscarConductor, name='buscar_conductor'),
     path('registros/buscarAcompanante', views.buscarAcompanante, name='buscar_acompanante'),
 
 

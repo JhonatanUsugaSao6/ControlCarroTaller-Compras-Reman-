@@ -3,9 +3,9 @@ from django.db import models
 from django.contrib.auth.models import User  
 
 class Registro(models.Model):
-    cedula_operador = models.CharField(max_length=25)
-    codigo_operador = models.CharField(max_length=50, default="Ninguna")
-    nombre_operador = models.CharField(max_length=50)
+    cedula_conductor = models.CharField(max_length=25)
+    cargo_conductor = models.CharField(max_length=50, default="Ninguna")
+    nombre_conductor = models.CharField(max_length=50)
     cedula_acompanante = models.CharField(max_length=25, default="Ninguna")
     nombre_acompanante = models.CharField(max_length=50, default="Ninguna")
     cargo_acompanante = models.CharField(max_length=50, default="Ninguna")
@@ -17,6 +17,7 @@ class Registro(models.Model):
     motivo_salida = models.CharField(max_length=30)
     autorizacion = models.CharField(max_length=50)
     observaciones = models.CharField(max_length=100, default="Ninguna")
+    url_imagen = models.ImageField(upload_to='fotosRegistro/', null=True, blank=True)
     estado_registro = models.IntegerField(default=1)  
     vigilante_asignado = models.ForeignKey(
         User, 
@@ -133,8 +134,6 @@ class FotoDetalle(models.Model):
 
     def __str__(self):
         return f"Foto de {self.parte} - Detalle {self.detalle_carro.id}"
-    
-
     
 
 

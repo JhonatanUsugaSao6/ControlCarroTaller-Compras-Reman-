@@ -4,23 +4,23 @@ from CarroTaller.models import DetalleCarro, FotoDetalle, Registro
 
 class RegistroForm(forms.ModelForm):
 
-    cedula_operador = forms.CharField(
+    cedula_conductor = forms.CharField(
         required=True,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        error_messages={'required': 'La cédula del operador es obligatoria.'}
+        error_messages={'required': 'La cédula del conductor es obligatoria.'}
     )
     
-    codigo_operador = forms.CharField(
-        required=False,
+    cargo_conductor = forms.CharField(
+        required=True,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        error_messages={'required': 'El código del operador es obligatorio.'}
+        error_messages={'required': 'El cargo del conductor es obligatorio.'}
     )
     
-    nombre_operador = forms.CharField(
+    nombre_conductor = forms.CharField(
         max_length=50,
         required=True,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        error_messages={'required': 'El nombre del operador es obligatorio.'}
+        error_messages={'required': 'El nombre del conductor es obligatorio.'}
     )
     
     cedula_acompanante = forms.CharField(
@@ -98,11 +98,17 @@ class RegistroForm(forms.ModelForm):
         required=False,
         widget=forms.Textarea(attrs={'class': 'form-control'}),
     )
+    
+    url_imagen = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        error_messages={'invalid': 'Sube una imagen válida.'}
+    )
 
     class Meta:
         model = Registro
-        fields = ['cedula_operador', 'codigo_operador', 'nombre_operador', 'cedula_acompanante', 'nombre_acompanante', 'cargo_acompanante', 'fecha', 
-                  'hora_salida', 'hora_entrada', 'kilometraje_salida', 'kilometraje_entrada', 'motivo_salida', 'autorizacion', 'observaciones']
+        fields = ['cedula_conductor', 'cargo_conductor', 'nombre_conductor', 'cedula_acompanante', 'nombre_acompanante', 'cargo_acompanante', 'fecha', 
+                  'hora_salida', 'hora_entrada', 'kilometraje_salida', 'kilometraje_entrada', 'motivo_salida', 'autorizacion', 'observaciones', 'url_imagen']
         widgets = {
             'fecha': forms.DateInput(attrs={'type': 'date', 'format': '%Y-%m-%d'}),
             'hora_salida': forms.TimeInput(attrs={'type': 'time', 'format': '%H:%M'}),
@@ -114,16 +120,16 @@ class RegistroForm(forms.ModelForm):
         if self.instance and self.instance.motivo_salida == 'Otro':
             self.fields['motivo_otro'].initial = self.instance.motivo_otro
     
-    def clean_cedula_operador(self):
-        cedula_operador = self.cleaned_data.get("cedula_operador")
+    def clean_cedula_conductor(self):
+        cedula_operador = self.cleaned_data.get("cedula_conductor")
         if not cedula_operador:
             raise forms.ValidationError("Este campo es obligatorio.")
         if len(cedula_operador) < 5 or len(cedula_operador) > 10:
             raise forms.ValidationError("El número de dígitos no son coherentes.")
         return cedula_operador
     
-    def clean_nombre_operador(self):
-        nombre_operador = self.cleaned_data.get("nombre_operador")
+    def clean_nombre_conductor(self):
+        nombre_operador = self.cleaned_data.get("nombre_conductor")
         if not nombre_operador:
             raise forms.ValidationError("Este campo es obligatorio.")
         if len(nombre_operador) < 3 or len(nombre_operador) > 50:

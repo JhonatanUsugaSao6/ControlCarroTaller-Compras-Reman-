@@ -27,10 +27,6 @@ def insertarRegistros(request):
         if not observaciones:
             request.POST["observaciones"] = "Ninguna"
             
-        codigo_operador = request.POST.get("codigo_operador")
-        if not codigo_operador:
-            request.POST["codigo_operador"] = "Ninguna"
-            
         cedula_acompanante = request.POST.get("cedula_acompanante")
         if not cedula_acompanante:
             request.POST["cedula_acompanante"] = "Ninguna"
@@ -59,9 +55,12 @@ def insertarRegistros(request):
     else:
         form = RegistroForm()
 
+    print(form.errors)
     return render(request, 'registros/insertar.html', {
         'form': form,
     })
+    
+
 
 
 
@@ -603,8 +602,8 @@ def listadoDetallesYFotos(request, registro_id):
 
 
 
-def buscarOperador(request):
-    cedula = request.GET.get("cedula_operador", None)
+def buscarConductor(request):
+    cedula = request.GET.get("cedula_conductor", None)
     if cedula:
         try:
             connection = pyodbc.connect(
@@ -617,11 +616,11 @@ def buscarOperador(request):
             cursor = connection.cursor()
 
             # Ejecuta la consulta
-            cursor.execute("SELECT f200_razon_social FROM BI_W0550 WHERE F200_ID = ?", cedula)
+            cursor.execute("SELECT f200_razon_social, C0763_DESCRIPCION FROM BI_W0550 WHERE F200_ID = ?", cedula)
             row = cursor.fetchone()
 
             if row:
-                return JsonResponse({"nombre": row[0]})
+                return JsonResponse({"nombre": row[0], "cargo": row[1]})
             else:
                 return JsonResponse({"error": "No se encontró un operador con esta cédula."})
         except pyodbc.Error as e:
