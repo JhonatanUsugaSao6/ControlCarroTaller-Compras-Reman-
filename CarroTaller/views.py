@@ -5,7 +5,7 @@ from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from CarroTaller.models import FotoDetalle, Persona, Registro, DetalleCarro
+from CarroTaller.models import EvidenciaRegistro, FotoDetalle, Registro, DetalleCarro
 from CarroTaller.forms import LoginForm, RegistroForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -20,7 +20,6 @@ def insertarRegistros(request):
     if request.method == "POST":
         motivo_salida = request.POST.get("motivo_salida")
         motivo_salida_otro = request.POST.get("motivo_salida_otro", "").strip()
-        
         
         request.POST = request.POST.copy()
         observaciones = request.POST.get("observaciones")
@@ -39,27 +38,25 @@ def insertarRegistros(request):
         if not cargo_acompanante:
             request.POST["cargo_acompanante"] = "Ninguna"
         
-        # Si se selecciona "Otro", reemplazar motivo_salida con el valor de motivo_salida_otro
         if motivo_salida == "Otro" and motivo_salida_otro:
-            request.POST = request.POST.copy() 
             request.POST["motivo_salida"] = motivo_salida_otro
-
 
         form = RegistroForm(request.POST, request.FILES)
         if form.is_valid():
             registro = form.save(commit=False)
             registro.vigilante_asignado = request.user
             registro.save()
-            return redirect('home')
 
+            # Guardar evidencias
+            imagenes = request.FILES.getlist("imagenes")
+            for img in imagenes:
+                EvidenciaRegistro.objects.create(registro=registro, ruta=img)
+
+            return redirect('home')
     else:
         form = RegistroForm()
 
-    print(form.errors)
-    return render(request, 'registros/insertar.html', {
-        'form': form,
-    })
-    
+    return render(request, 'registros/insertar.html', {'form': form})
 
 
 
@@ -152,6 +149,10 @@ def informacionRegistro(request, id):
         formato_fecha = registro.fecha.strftime('%d/%m/%Y')
         formato_hora_s = registro.hora_salida.strftime('%H:%M')
         formato_hora_e = registro.hora_entrada.strftime('%H:%M')
+        
+        # Obtener todas las imágenes relacionadas
+        urls_imagenes = [evidencia.ruta.url for evidencia in registro.evidencias.all()]
+        
         data = {
             'id': registro.id,
             'vigilante_asignado': registro.vigilante_asignado.first_name,
@@ -169,11 +170,12 @@ def informacionRegistro(request, id):
             'motivo_salida': registro.motivo_salida,
             'autorizacion': registro.autorizacion,
             'observaciones': registro.observaciones,
-            'url_imagen': registro.url_imagen.url if registro.url_imagen else None,
+            'urls_imagenes': urls_imagenes,
             'ultimo_vigilante': registro.ultimo_vigilante.first_name,
         }
         
         return JsonResponse(data)
+    
     except Registro.DoesNotExist:
         return JsonResponse({'error': 'Registro no encontrado'}, status=404)
     

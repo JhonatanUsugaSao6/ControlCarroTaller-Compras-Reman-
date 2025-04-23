@@ -5,11 +5,11 @@
     <div class="formulario">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            
+
             {% if error_general %}
-                <div class="text-danger" style="text-align: center;">
-                    <p class="mensaje-error">{{ error_general }}</p>
-                </div>
+            <div class="text-danger" style="text-align: center;">
+                <p class="mensaje-error">{{ error_general }}</p>
+            </div>
             {% endif %}
 
             <div class="row">
@@ -23,7 +23,7 @@
                                 {% for foto in fotos %}
                                     {% if foto.parte == parte %}
                                         <div>
-                                            <img src="{{ foto.imagen.url }}" alt="Foto previa de {{ parte }}" style="max-width: 100%; height: auto;" id="foto" name="foto">
+                                            <img src="{{ foto.imagen.url }}" alt="Foto previa de {{ parte }}" style="max-width: 100%; height: 250px;" id="foto" name="foto">
                                         </div>
                                         <input type="hidden" name="fotoanterior_{{ parte }}" value="{{ foto.id }}">
                                     {% endif %}
@@ -37,11 +37,14 @@
                     </div>
                 {% endfor %}
             </div>
-            
+
+    
             <button type="submit" class="btn btn-light boton-guardar">Subir fotos</button>
         </form>
     </div>
 </div>
 
-{% include "inc/footer.html" %}
 
+
+
+{% include "inc/footer.html" %}

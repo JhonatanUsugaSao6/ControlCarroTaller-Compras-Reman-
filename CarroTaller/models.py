@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Registro(models.Model):
     cedula_conductor = models.CharField(max_length=25)
-    cargo_conductor = models.CharField(max_length=50, default="Ninguna")
+    cargo_conductor = models.CharField(max_length=50)
     nombre_conductor = models.CharField(max_length=50)
     cedula_acompanante = models.CharField(max_length=25, default="Ninguna")
     nombre_acompanante = models.CharField(max_length=50, default="Ninguna")
@@ -14,10 +14,9 @@ class Registro(models.Model):
     hora_entrada = models.TimeField()
     kilometraje_salida = models.CharField(max_length=50)
     kilometraje_entrada = models.CharField(max_length=50)
-    motivo_salida = models.CharField(max_length=30)
+    motivo_salida = models.CharField(max_length=500)
     autorizacion = models.CharField(max_length=50)
-    observaciones = models.CharField(max_length=100, default="Ninguna")
-    url_imagen = models.ImageField(upload_to='fotosRegistro/', null=True, blank=True)
+    observaciones = models.CharField(max_length=500, default="Ninguna")
     estado_registro = models.IntegerField(default=1)  
     vigilante_asignado = models.ForeignKey(
         User, 
@@ -38,6 +37,16 @@ class Registro(models.Model):
         db_table = "registros"
     
     
+
+class EvidenciaRegistro(models.Model):
+    ruta = models.FileField(upload_to='fotosRegistro/')
+    fecha = models.DateField(auto_now_add=True)
+    registro = models.ForeignKey(Registro, on_delete=models.CASCADE, related_name='evidencias')
+    
+    class Meta:
+        db_table = "evidencias_registro"
+    
+
 
 class DetalleCarro(models.Model):
     ESTADOS = [
@@ -144,3 +153,6 @@ class Persona(models.Model):
     
     class Meta:
         db_table = "BI_W0550"
+        
+        
+        

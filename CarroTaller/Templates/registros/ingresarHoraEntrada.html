@@ -34,7 +34,7 @@
 
                 <div class="col-sm-12 margen">
                     <div class="form-floating">
-                        <input type="number" name="kilometraje_entrada"
+                        <input type="text" name="kilometraje_entrada"
                             class="form-control borde-input {% if form.errors.kilometraje_entrada %}is-invalid{% endif %}"
                             id="floatingInputKilometrajeEntrada" placeholder="Kilometraje de entrada"
                             value="{{ request.POST.kilometraje_entrada|default:'' }}">
@@ -56,6 +56,7 @@
 </div>
 
 <script>
+    
     document.addEventListener("DOMContentLoaded", function () {
         const horaInputs = document.getElementsByClassName('hora_entrada');
         const horaActual = new Date().toTimeString().split(' ')[0].slice(0, 5);  // Formato HH:MM
@@ -64,6 +65,25 @@
             horaInput.setAttribute('readonly', true); // Hacer que el campo de hora sea solo lectura
         }
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('floatingInputKilometrajeEntrada');
+    
+        input.addEventListener('input', function () {
+            let valor = input.value.replace(/\D/g, ''); // quitar todo lo que no sea dígito
+            if (valor) {
+                input.value = parseInt(valor).toLocaleString('es');
+            } else {
+                input.value = '';
+            }
+        });
+    
+        // Quitar formato antes de enviar el formulario
+        input.form.addEventListener('submit', function () {
+            input.value = input.value.replace(/\./g, '');
+        });
+    });
+
 </script>
 
 {% include "inc/footer.html" %}

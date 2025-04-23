@@ -80,7 +80,7 @@ class RegistroForm(forms.ModelForm):
     )
     
     motivo_otro = forms.CharField(
-        max_length=100,
+        max_length=500,
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         error_messages={'required': 'Por favor ingrese un motivo en "Otro".'}
@@ -94,7 +94,7 @@ class RegistroForm(forms.ModelForm):
     )
     
     observaciones = forms.CharField(
-        max_length=100,
+        max_length=500,
         required=False,
         widget=forms.Textarea(attrs={'class': 'form-control'}),
     )

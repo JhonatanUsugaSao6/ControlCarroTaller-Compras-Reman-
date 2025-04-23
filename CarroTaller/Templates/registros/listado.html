@@ -81,9 +81,16 @@
         <p id="motivoSalida"></p>
         <p id="autorizacion"></p>
         <p id="observaciones"></p>
-        <img id="imagenRegistro" src="" alt="Imagen del registro" class="d-block mx-auto" style="display:none; max-width:200px; height:auto;">
+        
+        <div id="bloque-imagenes" style="display: none; text-align: center;">
+          <p>Imágenes del registro</p>
+          <div id="contenedor-imagenes" style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            
+          </div>
+          
+        </div>
+        
         <p id="ultimoVigilante"></p>
-        <!-- Imagen -->
         
       </div>
       <div class="modal-footer">
@@ -118,22 +125,32 @@
             document.getElementById('fecha').textContent = `Fecha: ${data.fecha}`;
             document.getElementById('horaSalida').textContent = `Hora de Salida: ${data.hora_salida}`;
             document.getElementById('horaEntrada').textContent = `Hora de Entrada: ${data.hora_entrada}`;
-            document.getElementById('kilometrajeSalida').textContent = `Kilometraje de Salida: ${data.kilometraje_salida}`;
-            document.getElementById('kilometrajeEntrada').textContent = `Kilometraje de Entrada: ${data.kilometraje_entrada}`;
+            document.getElementById('kilometrajeSalida').textContent = `Kilometraje de Salida: ${parseInt(data.kilometraje_salida).toLocaleString('es')}`;
+            document.getElementById('kilometrajeEntrada').textContent = `Kilometraje de Entrada: ${parseInt(data.kilometraje_entrada).toLocaleString('es')}`;
             document.getElementById('motivoSalida').textContent = `Motivo de Salida: ${data.motivo_salida}`;
             document.getElementById('autorizacion').textContent = `Autorización: ${data.autorizacion}`;
             document.getElementById('observaciones').textContent = `Observaciones: ${data.observaciones}`;
             document.getElementById('ultimoVigilante').textContent = `Último Vigilante: ${data.ultimo_vigilante}`;
   
             // Mostrar la imagen si existe
-            const imagen = document.getElementById('imagenRegistro');
-            if (data.url_imagen) {
-              imagen.src = data.url_imagen; // ✅ usa la URL tal como viene del backend
-              imagen.style.display = 'block';
+            const bloqueImagenes = document.getElementById('bloque-imagenes');
+            const contenedorImagenes = document.getElementById('contenedor-imagenes');
+            contenedorImagenes.innerHTML = ''; // Limpiar imágenes anteriores
+
+            if (data.urls_imagenes && data.urls_imagenes.length > 0) {
+              data.urls_imagenes.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Imagen del registro';
+                img.style.maxWidth = '200px';
+                img.style.maxHeight = '200px';
+                img.style.borderRadius = '8px';
+                contenedorImagenes.appendChild(img);
+              });
+              bloqueImagenes.style.display = 'block';
             } else {
-              imagen.style.display = 'none';
+              bloqueImagenes.style.display = 'none';
             }
-  
             const modal = new bootstrap.Modal(document.getElementById('modalInformacion'));
             modal.show();
           })
